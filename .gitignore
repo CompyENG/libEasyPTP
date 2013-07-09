@@ -14,3 +14,7 @@
 
 # Temporary files
 *~
+
+# Dependency file from Makefile
+.depend
+

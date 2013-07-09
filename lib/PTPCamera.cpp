@@ -27,8 +27,8 @@
  * standard (non-CHDK) PTP cameras.
  */
  
-#include "PTPCamera.hpp"
-#include "libptp++.hpp"
+#include "libeasyptp.hpp"
+#include "libeasyptp/PTPCamera.hpp"
 
 namespace PTP {
     

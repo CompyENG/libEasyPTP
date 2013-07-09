@@ -31,8 +31,8 @@
 #include <cstring>
 #include <stdint.h>
  
-#include "PTPContainer.hpp"
-#include "libptp++.hpp"
+#include "libeasyptp.hpp"
+#include "libeasyptp/PTPContainer.hpp"
 
 namespace PTP {
 

@@ -22,7 +22,7 @@
 #define LIBPTP_PP_PTPUSB_H_
 
 #include <libusb-1.0/libusb.h>
-#include "IPTPComm.hpp"
+#include "libeasyptp/IPTPComm.hpp"
 
 namespace PTP {
     

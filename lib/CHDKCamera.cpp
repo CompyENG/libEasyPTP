@@ -34,10 +34,10 @@
 #include <unistd.h>
 #include <stdint.h>
  
-#include "libptp++.hpp"
-#include "CHDKCamera.hpp"
-#include "PTPContainer.hpp"
-#include "LVData.hpp"
+#include "libeasyptp.hpp"
+#include "libeasyptp/CHDKCamera.hpp"
+#include "libeasyptp/PTPContainer.hpp"
+#include "libeasyptp/LVData.hpp"
 
 namespace PTP {
 

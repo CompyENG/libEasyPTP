@@ -22,7 +22,7 @@
 #define LIBPTP_PP_LVDATA_H_
 
 namespace PTP {
-#include "chdk/live_view.h"
+#include "libeasyptp/chdk/live_view.h"
     
     class PTPContainer; // Forward delcaration for this is enough
     

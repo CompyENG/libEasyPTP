@@ -21,7 +21,7 @@
 #ifndef LIBPTP_PP_PTPCAMERA_H_
 #define LIBPTP_PP_PTPCAMERA_H_
 
-#include "CameraBase.hpp"
+#include "libeasyptp/CameraBase.hpp"
 
 namespace PTP {
     

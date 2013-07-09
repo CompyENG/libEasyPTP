@@ -23,7 +23,7 @@
 
 #include <string>
 #include <vector>
-#include "CameraBase.hpp"
+#include "libeasyptp/CameraBase.hpp"
 
 namespace PTP {
     

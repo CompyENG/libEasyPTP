@@ -32,10 +32,10 @@
 #include <cstring>
 #include <stdint.h>
 
-#include "libptp++.hpp"
-#include "CameraBase.hpp"
-#include "PTPContainer.hpp"
-#include "IPTPComm.hpp"
+#include "libeasyptp.hpp"
+#include "libeasyptp/CameraBase.hpp"
+#include "libeasyptp/PTPContainer.hpp"
+#include "libeasyptp/IPTPComm.hpp"
 
 namespace PTP {
  

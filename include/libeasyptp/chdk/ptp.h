@@ -1,3 +1,7 @@
+/**
+ * Note: this file contains definitions from the CHDK project.
+ */
+ 
 #ifndef __CHDK_PTP_H
 #define __CHDK_PTP_H
 

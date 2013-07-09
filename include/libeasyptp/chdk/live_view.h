@@ -1,3 +1,7 @@
+/**
+ * Note: this file contains definitions from the CHDK project.
+ */
+ 
 #ifndef __LIVE_VIEW_H
 #define __LIVE_VIEW_H
 

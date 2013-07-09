@@ -18,8 +18,8 @@
  *  <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBPTP_PP_LVDATA_H_
-#define LIBPTP_PP_LVDATA_H_
+#ifndef LIBEASYPTP_LVDATA_H_
+#define LIBEASYPTP_LVDATA_H_
 
 namespace PTP {
 #include "libeasyptp/chdk/live_view.h"
@@ -47,4 +47,4 @@ namespace PTP {
     
 }
 
-#endif /* LIBPTP_PP_LVDATA_H_ */
+#endif /* LIBEASYPTP_LVDATA_H_ */

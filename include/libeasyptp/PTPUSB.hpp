@@ -18,8 +18,8 @@
  *  <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBPTP_PP_PTPUSB_H_
-#define LIBPTP_PP_PTPUSB_H_
+#ifndef LIBEASYPTP_PTPUSB_H_
+#define LIBEASYPTP_PTPUSB_H_
 
 #include <libusb-1.0/libusb.h>
 #include "libeasyptp/IPTPComm.hpp"

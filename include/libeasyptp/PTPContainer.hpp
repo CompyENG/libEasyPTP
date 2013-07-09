@@ -18,8 +18,8 @@
  *  <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBPTP_PP_PTPCONTAINER_H_
-#define LIBPTP_PP_PTPCONTAINER_H_
+#ifndef LIBEASYPTP_PTPCONTAINER_H_
+#define LIBEASYPTP_PTPCONTAINER_H_
 
 namespace PTP {
 
@@ -56,4 +56,4 @@ namespace PTP {
     
 }
 
-#endif /* LIBPTP_PP_PTPCONTAINER_H_ */
+#endif /* LIBEASYPTP_PTPCONTAINER_H_ */

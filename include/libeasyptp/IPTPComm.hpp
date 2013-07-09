@@ -18,8 +18,8 @@
  *  <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBPTP_PP_IPTPCOMM_H_
-#define LIBPTP_PP_IPTPCOMM_H_
+#ifndef LIBEASYPTP_IPTPCOMM_H_
+#define LIBEASYPTP_IPTPCOMM_H_
 
 namespace PTP {
 
@@ -84,4 +84,4 @@ namespace PTP {
 
 }
 
-#endif /* LIBPTP_PP_IPTPCOMM_H_ */
+#endif /* LIBEASYPTP_IPTPCOMM_H_ */

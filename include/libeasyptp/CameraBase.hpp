@@ -18,8 +18,8 @@
  *  <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBPTP_PP_CAMERABASE_H_
-#define LIBPTP_PP_CAMERABASE_H_
+#ifndef LIBEASYPTP_CAMERABASE_H_
+#define LIBEASYPTP_CAMERABASE_H_
 
 #include <libusb-1.0/libusb.h>
 
@@ -49,4 +49,4 @@ namespace PTP {
     };
 }
 
-#endif /* LIBPTP_PP_CAMERABASE_H_ */
+#endif /* LIBEASYPTP_CAMERABASE_H_ */

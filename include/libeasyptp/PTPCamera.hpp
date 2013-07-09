@@ -18,8 +18,8 @@
  *  <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBPTP_PP_PTPCAMERA_H_
-#define LIBPTP_PP_PTPCAMERA_H_
+#ifndef LIBEASYPTP_PTPCAMERA_H_
+#define LIBEASYPTP_PTPCAMERA_H_
 
 #include "libeasyptp/CameraBase.hpp"
 
@@ -34,4 +34,4 @@ namespace PTP {
     
 }
 
-#endif /* LIBPTP_PP_PTPCAMERA_H_ */
+#endif /* LIBEASYPTP_PTPCAMERA_H_ */

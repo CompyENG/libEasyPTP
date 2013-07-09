@@ -55,13 +55,13 @@ clean:
 libeasyptp.so: $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared -o $@ $^
 
-$(OBJS): $(SRCS)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $(LIBS) -o $@ $<
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $(LIBS) -c -o $@ $<
 
 depend: .depend
 
 .depend: $(SRCS)
 	@$(RM) ./.depend
-	$(CXX) $(CXXFLAGS) -MM $^ > ./.depend;
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -MM $^ > ./.depend;
 
 include .depend

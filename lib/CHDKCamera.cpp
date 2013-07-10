@@ -34,10 +34,11 @@
 #include <unistd.h>
 #include <stdint.h>
  
-#include "libeasyptp.hpp"
+#include "libeasyptp/PTPErrors.hpp"
 #include "libeasyptp/CHDKCamera.hpp"
 #include "libeasyptp/PTPContainer.hpp"
 #include "libeasyptp/LVData.hpp"
+#include "libeasyptp/chdk/ptp.h"
 
 namespace EasyPTP {
 
@@ -66,7 +67,7 @@ CHDKCamera::CHDKCamera(IPTPComm * protocol) : CameraBase(protocol) {
  */
 float CHDKCamera::get_chdk_version(void) {
     PTPContainer cmd(PTPContainer::CONTAINER_TYPE_COMMAND, 0x9999);
-    cmd.add_param(PTP::PTP_CHDK_Version);
+    cmd.add_param(PTP_CHDK_Version);
     
     PTPContainer out_resp, data, out_data;
     this->ptp_transaction(cmd, data, false, out_resp, out_data);
@@ -94,7 +95,7 @@ float CHDKCamera::get_chdk_version(void) {
  */
 uint32_t CHDKCamera::check_script_status(void) {
     PTPContainer cmd(PTPContainer::CONTAINER_TYPE_COMMAND, 0x9999);
-    cmd.add_param(PTP::PTP_CHDK_ScriptStatus);
+    cmd.add_param(PTP_CHDK_ScriptStatus);
     
     PTPContainer out_resp, data, out_data;
     this->ptp_transaction(cmd, data, true, out_resp, out_data);
@@ -113,7 +114,7 @@ uint32_t CHDKCamera::check_script_status(void) {
  */
 uint32_t CHDKCamera::execute_lua(const std::string script, uint32_t * script_error, const bool block) {
     PTPContainer cmd(PTPContainer::CONTAINER_TYPE_COMMAND, 0x9999);
-    cmd.add_param(PTP::PTP_CHDK_ExecuteScript);
+    cmd.add_param(PTP_CHDK_ExecuteScript);
     cmd.add_param(PTP_CHDK_SL_LUA);
     
     PTPContainer data(PTPContainer::CONTAINER_TYPE_DATA, 0x9999);
@@ -155,7 +156,7 @@ uint32_t CHDKCamera::execute_lua(const std::string script, uint32_t * script_err
  */
 void CHDKCamera::read_script_message(PTPContainer& out_resp, PTPContainer& out_data) {
     PTPContainer cmd(PTPContainer::CONTAINER_TYPE_COMMAND, 0x9999);
-    cmd.add_param(PTP::PTP_CHDK_ReadScriptMsg);
+    cmd.add_param(PTP_CHDK_ReadScriptMsg);
     cmd.add_param(PTP_CHDK_SL_LUA);
     
     PTPContainer data;
@@ -172,7 +173,7 @@ void CHDKCamera::read_script_message(PTPContainer& out_resp, PTPContainer& out_d
  */
 uint32_t CHDKCamera::write_script_message(const std::string message, const uint32_t script_id) {
     PTPContainer cmd(PTPContainer::CONTAINER_TYPE_COMMAND, 0x9999);
-    cmd.add_param(PTP::PTP_CHDK_WriteScriptMsg);
+    cmd.add_param(PTP_CHDK_WriteScriptMsg);
     cmd.add_param(script_id);
     
     PTPContainer data(PTPContainer::CONTAINER_TYPE_DATA, 0x9999);
@@ -214,7 +215,7 @@ void CHDKCamera::get_live_view_data(LVData& data_out, const bool liveview, const
     if(palette)  flags |= LV_TFR_PALETTE;
     
     PTPContainer cmd(PTPContainer::CONTAINER_TYPE_COMMAND, 0x9999);
-    cmd.add_param(PTP::PTP_CHDK_GetDisplayData);
+    cmd.add_param(PTP_CHDK_GetDisplayData);
     cmd.add_param(flags);
     
     PTPContainer data, out_resp, out_data;
@@ -337,14 +338,14 @@ bool CHDKCamera::upload_file(const std::string local_filename, const std::string
     
     packed = CHDKCamera::_pack_file_for_upload(&packed_size, local_filename, remote_filename);
     
-    cmd.add_param(PTP::PTP_CHDK_UploadFile);
+    cmd.add_param(PTP_CHDK_UploadFile);
     data.set_payload(packed, packed_size);
     
     this->ptp_transaction(cmd, data, false, resp, out_data);
     
     delete[] packed;
     
-    return (resp.get_param_n(0) == PTP::CHDK_PTP_RC_OK);
+    return (resp.get_param_n(0) == CHDK_PTP_RC_OK);
 }
 
 } /* namespace PTP */

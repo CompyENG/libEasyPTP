@@ -31,7 +31,7 @@
 #include <cstring>
 #include <stdint.h>
 
-#include "libeasyptp.hpp"
+#include "libeasyptp/PTPErrors.hpp"
 #include "libeasyptp/LVData.hpp"
 #include "libeasyptp/PTPContainer.hpp"
  

@@ -125,31 +125,6 @@ namespace EasyPTP {
 #include "libeasyptp/chdk/live_view.h"
 #include "libeasyptp/chdk/ptp.h"
 
-    enum LIBPTP_PP_ERRORS {
-        ERR_NONE = 0,
-        ERR_CANNOT_CONNECT,
-        ERR_NO_DEVICE,
-        ERR_ALREADY_OPEN,
-        ERR_NOT_OPEN,
-        ERR_CANNOT_RECV,
-        ERR_TIMEOUT,
-        ERR_INVALID_RESPONSE,
-        ERR_NOT_IMPLEMENTED,
-        
-        ERR_PTPCONTAINER_NO_PAYLOAD,
-        ERR_PTPCONTAINER_INVALID_PARAM,
-        
-        ERR_LVDATA_NOT_ENOUGH_DATA
-    };
-    
-    // Picked out of CHDK source in a header we don't want to include
-    enum CHDK_PTP_RESP {
-        CHDK_PTP_RC_OK = 0x2001,
-        CHDK_PTP_RC_GeneralError = 0x2002,
-        CHDK_PTP_RC_ParameterNotSupported = 0x2006,
-        CHDK_PTP_RC_InvalidParameter = 0x201D
-    };
-
 }
 
 #endif /* LIBEASYPTP_H_ */

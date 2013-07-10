@@ -30,6 +30,14 @@ namespace EasyPTP {
     class PTPContainer;
     class LVData;
     class IPTPComm;
+    
+    // Picked out of CHDK source in a header we don't want to include
+    enum CHDK_PTP_RESP {
+        CHDK_PTP_RC_OK = 0x2001,
+        CHDK_PTP_RC_GeneralError = 0x2002,
+        CHDK_PTP_RC_ParameterNotSupported = 0x2006,
+        CHDK_PTP_RC_InvalidParameter = 0x201D
+    };
 
     class CHDKCamera : public CameraBase {
         static uint8_t * _pack_file_for_upload(uint32_t * out_size, const std::string local_filename, const std::string remote_filename);

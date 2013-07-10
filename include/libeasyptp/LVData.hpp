@@ -28,8 +28,8 @@ namespace EasyPTP {
     
     class LVData {
         private:
-            PTP::lv_data_header * vp_head;
-            PTP::lv_framebuffer_desc * fb_desc;
+            lv_data_header * vp_head;
+            lv_framebuffer_desc * fb_desc;
             uint8_t * payload;
             void init();
             static uint8_t clip(const int v);

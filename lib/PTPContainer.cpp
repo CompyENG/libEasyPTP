@@ -31,7 +31,7 @@
 #include <cstring>
 #include <stdint.h>
  
-#include "libeasyptp.hpp"
+#include "libeasyptp/PTPErrors.hpp"
 #include "libeasyptp/PTPContainer.hpp"
 
 namespace EasyPTP {
@@ -244,7 +244,7 @@ uint32_t PTPContainer::get_param_n(const uint32_t n) const {
     uint32_t first_byte;
     
     if(this->payload == NULL) {
-        throw PTP::ERR_PTPCONTAINER_NO_PAYLOAD;
+        throw ERR_PTPCONTAINER_NO_PAYLOAD;
         return 0;
     }
     
@@ -254,7 +254,7 @@ uint32_t PTPContainer::get_param_n(const uint32_t n) const {
     //  Add an extra four to ensure we have a parameter n
     // Subtract 12 bytes (header) from length
     if((this->length-12) < 4+4*n) {
-        throw PTP::ERR_PTPCONTAINER_INVALID_PARAM;
+        throw ERR_PTPCONTAINER_INVALID_PARAM;
         return 0;
     }
     

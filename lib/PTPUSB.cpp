@@ -21,7 +21,7 @@
 #include <string>
 #include <libusb-1.0/libusb.h>
 
-#include "libeasyptp.hpp"
+#include "libeasyptp/PTPErrors.hpp"
 #include "libeasyptp/PTPUSB.hpp"
 
 namespace EasyPTP {
@@ -135,13 +135,13 @@ libusb_device * PTPUSB::find_first_camera() {
  */
 bool PTPUSB::open(libusb_device * dev) {
     if(this->handle != NULL) {  // Handle will be non-null if the device is already open
-        throw PTP::ERR_ALREADY_OPEN;
+        throw ERR_ALREADY_OPEN;
         return false;
     }
 
     int err = libusb_open(dev, &(this->handle));    // Open the device, placing the handle in this->handle
     if(err) {
-        throw PTP::ERR_CANNOT_CONNECT;
+        throw ERR_CANNOT_CONNECT;
         return false;
     }
     libusb_unref_device(dev);   // We needed this device refed before we opened it, so we added an extra ref. open adds another ref, so remove one ref
@@ -202,7 +202,7 @@ bool PTPUSB::_bulk_write(const unsigned char * bytestr, const int length, const 
     int transferred;
     
     if(this->handle == NULL) {
-        throw PTP::ERR_NOT_OPEN;
+        throw EasyPTP::ERR_NOT_OPEN;
         return 0;
     }
     
@@ -231,7 +231,7 @@ bool PTPUSB::_bulk_write(const unsigned char * bytestr, const int length, const 
  */
 bool PTPUSB::_bulk_read(unsigned char * data_out, const int size, int * transferred, const int timeout) {
     if(this->handle == NULL) {
-        throw PTP::ERR_NOT_OPEN;
+        throw ERR_NOT_OPEN;
         return 0;
     }
     

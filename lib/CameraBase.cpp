@@ -32,7 +32,7 @@
 #include <cstring>
 #include <stdint.h>
 
-#include "libeasyptp.hpp"
+#include "libeasyptp/PTPErrors.hpp"
 #include "libeasyptp/CameraBase.hpp"
 #include "libeasyptp/PTPContainer.hpp"
 #include "libeasyptp/IPTPComm.hpp"
@@ -126,7 +126,7 @@ void CameraBase::recv_ptp_message(PTPContainer& out, const int timeout) {
     if(read < 4) {
         // If we actually read less than four bytes, we can't copy four bytes out of the buffer.
         // Also, something went very, very wrong
-        throw PTP::ERR_CANNOT_RECV;
+        throw ERR_CANNOT_RECV;
         return;
     }
     std::memcpy(&size, buffer, 4);      // The first four bytes of the buffer are the size

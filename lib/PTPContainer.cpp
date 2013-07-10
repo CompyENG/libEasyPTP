@@ -34,7 +34,7 @@
 #include "libeasyptp.hpp"
 #include "libeasyptp/PTPContainer.hpp"
 
-namespace PTP {
+namespace EasyPTP {
 
 /**
  * @brief Create a new, empty \c PTPContainer

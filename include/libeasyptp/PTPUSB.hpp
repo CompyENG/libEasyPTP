@@ -24,7 +24,7 @@
 #include <libusb-1.0/libusb.h>
 #include "libeasyptp/IPTPComm.hpp"
 
-namespace PTP {
+namespace EasyPTP {
     
     class PTPUSB : public IPTPComm {
         private:

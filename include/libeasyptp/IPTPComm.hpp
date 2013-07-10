@@ -21,7 +21,7 @@
 #ifndef LIBEASYPTP_IPTPCOMM_H_
 #define LIBEASYPTP_IPTPCOMM_H_
 
-namespace PTP {
+namespace EasyPTP {
 
     /**
      * @class IPTPComm

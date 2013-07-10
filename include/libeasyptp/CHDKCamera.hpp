@@ -25,7 +25,7 @@
 #include <vector>
 #include "libeasyptp/CameraBase.hpp"
 
-namespace PTP {
+namespace EasyPTP {
     
     class PTPContainer;
     class LVData;

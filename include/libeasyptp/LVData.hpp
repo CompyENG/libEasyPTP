@@ -21,7 +21,7 @@
 #ifndef LIBEASYPTP_LVDATA_H_
 #define LIBEASYPTP_LVDATA_H_
 
-namespace PTP {
+namespace EasyPTP {
 #include "libeasyptp/chdk/live_view.h"
     
     class PTPContainer; // Forward delcaration for this is enough

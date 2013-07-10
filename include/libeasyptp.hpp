@@ -119,7 +119,7 @@ libusb_exit(NULL);
 #include "libeasyptp/IPTPComm.hpp"
 #include "libeasyptp/PTPUSB.hpp"
 
-namespace PTP {
+namespace EasyPTP {
 
 // Force these definitions into the PTP namespace
 #include "libeasyptp/chdk/live_view.h"

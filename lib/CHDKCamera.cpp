@@ -39,7 +39,7 @@
 #include "libeasyptp/PTPContainer.hpp"
 #include "libeasyptp/LVData.hpp"
 
-namespace PTP {
+namespace EasyPTP {
 
 /**
  * Creates an empty \c CHDKCamera, without connecting to a camera.

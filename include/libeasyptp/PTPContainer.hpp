@@ -21,7 +21,7 @@
 #ifndef LIBEASYPTP_PTPCONTAINER_H_
 #define LIBEASYPTP_PTPCONTAINER_H_
 
-namespace PTP {
+namespace EasyPTP {
 
     class PTPContainer {
         private:

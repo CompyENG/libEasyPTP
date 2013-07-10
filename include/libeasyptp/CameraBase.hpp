@@ -23,7 +23,7 @@
 
 #include <libusb-1.0/libusb.h>
 
-namespace PTP {
+namespace EasyPTP {
     
     class PTPContainer;
     class IPTPComm;

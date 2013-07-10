@@ -23,7 +23,7 @@
 
 #include "libeasyptp/CameraBase.hpp"
 
-namespace PTP {
+namespace EasyPTP {
     
     class CameraBase;
     

@@ -24,7 +24,7 @@
 #include "libeasyptp.hpp"
 #include "libeasyptp/PTPUSB.hpp"
 
-namespace PTP {
+namespace EasyPTP {
     
 int PTPUSB::inst_count = 0;
     

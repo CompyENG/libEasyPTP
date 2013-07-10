@@ -35,7 +35,7 @@
 #include "libeasyptp/LVData.hpp"
 #include "libeasyptp/PTPContainer.hpp"
  
-namespace PTP {
+namespace EasyPTP {
     
 /**
  * @brief Initialize a blank live view data container

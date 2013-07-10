@@ -37,7 +37,7 @@
 #include "libeasyptp/PTPContainer.hpp"
 #include "libeasyptp/IPTPComm.hpp"
 
-namespace PTP {
+namespace EasyPTP {
  
 /**
  * Creates a new, empty \c CameraBase object.  Can then call

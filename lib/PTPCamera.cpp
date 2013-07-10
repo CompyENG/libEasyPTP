@@ -30,7 +30,7 @@
 #include "libeasyptp.hpp"
 #include "libeasyptp/PTPCamera.hpp"
 
-namespace PTP {
+namespace EasyPTP {
     
 /**
  * @brief Creates an empty \c PTPCamera.

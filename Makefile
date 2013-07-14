@@ -64,4 +64,4 @@ depend: .depend
 	@$(RM) ./.depend
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -MM $^ > ./.depend;
 
-include .depend
+-include .depend

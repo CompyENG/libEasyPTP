@@ -21,3 +21,6 @@
 # Don't commmit the netbeans project
 nbproject
 
+# Doxygen generated files
+doc/html
+doc/latex

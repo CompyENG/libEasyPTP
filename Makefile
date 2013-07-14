@@ -42,6 +42,7 @@ CXX := g++
 CP := cp
 RM := rm -rf
 MKDIR := mkdir -p
+DOXYGEN := doxygen
 CXXFLAGS := -fPIC -Wall
 LIBS := -lusb-1.0
 INCLUDES := -I./include/
@@ -56,7 +57,7 @@ endif
 
 OBJS := $(SRCS:%.cpp=%.o)
 		
-.PHONY: all install depend clean
+.PHONY: all install depend clean doc
 
 all: depend libeasyptp.so
 
@@ -81,3 +82,9 @@ depend: .depend
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -MM $^ > ./.depend;
 
 -include .depend
+
+doc:
+	$(DOXYGEN) ./doc/Doxyfile
+
+docclean:
+	$(RM) ./doc/html ./doc/latex

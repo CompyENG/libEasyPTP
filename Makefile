@@ -20,10 +20,24 @@
 #
 #####################################################################
 
-# User configurable:
+#####################################################################
+#  User configurable
+#####################################################################
+# Installation prefix, including trailing /.  Files will be copied
+#  to this directory on make install, including $(PREFIX)lib/,
+#  $(PREFIX)include/, etc.
 PREFIX := /usr/
 
-# Probably shouldn't touch unless you know what you're doing:
+# Whether or not to include the PTPUSB class.  This class requires
+#  libusbx development headers to be installed, but is practically
+#  required for libEasyPTP.  There are very few (if any) non-USB
+#  PTP devices.
+# Values: true, false
+HAS_USB := true
+
+#####################################################################
+#  Probably shouldn't touch unless you know what you're doing
+#####################################################################
 CXX := g++
 CP := cp
 RM := rm -rf
@@ -35,9 +49,11 @@ SRCS := ./lib/CameraBase.cpp \
 		./lib/CHDKCamera.cpp \
 		./lib/LVData.cpp \
 		./lib/PTPCamera.cpp \
-		./lib/PTPContainer.cpp \
-		./lib/PTPUSB.cpp
-		
+		./lib/PTPContainer.cpp
+ifeq ($(HAS_USB), true)
+    SRCS += ./lib/PTPUSB.cpp
+endif
+
 OBJS := $(SRCS:%.cpp=%.o)
 		
 .PHONY: all install depend clean

@@ -111,7 +111,7 @@ libusb_exit(NULL);
 
 // This serves as a global "include" file -- include this to grab all the other
 //  headers, too
-#include "libeasyptp/CameraBase.hpp"
+#include "libeasyptp/PTPBase.hpp"
 #include "libeasyptp/CHDKCamera.hpp"
 #include "libeasyptp/LVData.hpp"
 #include "libeasyptp/PTPCamera.hpp"

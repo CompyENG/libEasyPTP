@@ -19,12 +19,12 @@
  */
 
 /**
- * @file CameraBase.cpp
+ * @file PTPBase.cpp
  * 
  * @brief The base functionality that PTP communication is built on.
  * 
- * This file contains the CameraBase class, from which PTPCamera and CHDKCamera
- * are extended.  CameraBase is designed to handle all communication with libusb
+ * This file contains the PTPBase class, from which PTPCamera and CHDKCamera
+ * are extended.  PTPBase is designed to handle all communication with libusb
  * and with setting up communication with the camera, so that the Camera classes
  * can just talk to the camera using the correct protocol.
  */
@@ -33,46 +33,46 @@
 #include <stdint.h>
 
 #include "libeasyptp/PTPErrors.hpp"
-#include "libeasyptp/CameraBase.hpp"
+#include "libeasyptp/PTPBase.hpp"
 #include "libeasyptp/PTPContainer.hpp"
 #include "libeasyptp/IPTPComm.hpp"
 
 namespace EasyPTP {
  
 /**
- * Creates a new, empty \c CameraBase object.  Can then call
- * \c CameraBase::open to connect to a camera.
+ * Creates a new, empty \c PTPBase object.  Can then call
+ * \c PTPBase::open to connect to a camera.
  */
-CameraBase::CameraBase() {
+PTPBase::PTPBase() {
     this->init();
 }
 
 /**
- * Creates a new \c CameraBase object, using \c comm for the communication
+ * Creates a new \c PTPBase object, using \c comm for the communication
  * protocol class.
  */
-CameraBase::CameraBase(IPTPComm * protocol) {
+PTPBase::PTPBase(IPTPComm * protocol) {
     this->init();
     this->set_protocol(protocol);
 }
 
 /**
- * Destructor for a \c CameraBase object.  If connected to a camera, this
+ * Destructor for a \c PTPBase object.  If connected to a camera, this
  * will release the interface, and close the handle.
  */
-CameraBase::~CameraBase() {
+PTPBase::~PTPBase() {
     
 }
 
 /**
- * Initialize private and public \c CameraBase variables.
+ * Initialize private and public \c PTPBase variables.
  */
-void CameraBase::init() {
+void PTPBase::init() {
     this->protocol = NULL;
     this->_transaction_id = 0;
 }
 
-void CameraBase::set_protocol(IPTPComm * protocol) {
+void PTPBase::set_protocol(IPTPComm * protocol) {
     this->protocol = protocol;
 }
 
@@ -82,9 +82,9 @@ void CameraBase::set_protocol(IPTPComm * protocol) {
  * @param[in] cmd The \c PTPContainer containing the command/data to send.
  * @param[in] timeout The maximum number of seconds to attempt to send for.
  * @return 0 on success, libusb error code otherwise.
- * @see CameraBase::_bulk_write, CameraBase::recv_ptp_message
+ * @see PTPBase::_bulk_write, PTPBase::recv_ptp_message
  */
-int CameraBase::send_ptp_message(const PTPContainer& cmd, const int timeout) {
+int PTPBase::send_ptp_message(const PTPContainer& cmd, const int timeout) {
     if(this->protocol == NULL || this->protocol->is_open() == false) {
         throw ERR_NOT_OPEN;
         return -1;
@@ -102,17 +102,17 @@ int CameraBase::send_ptp_message(const PTPContainer& cmd, const int timeout) {
  *
  * This function works by first reading in a buffer of 512 bytes from the camera
  * to determine the length of the PTP message it will receive.  If necessary, it
- * then makes another \c CameraBase::_bulk_read call to read in the rest of the
+ * then makes another \c PTPBase::_bulk_read call to read in the rest of the
  * data.  Finally, \c PTPContainer::unpack is called to place the data in \a out.
  *
- * @warning \a timeout is passed to each call to \c CameraBase::_bulk_read.  Therefore,
+ * @warning \a timeout is passed to each call to \c PTPBase::_bulk_read.  Therefore,
  *          this function could take up to 2 * \a timeout seconds to return.
  *
  * @param[out] out A pointer to a PTPContainer that will store the read PTP message.
  * @param[in]  timeout The maximum number of seconds to wait to read each time.
- * @see CameraBase::_bulk_read, CameraBase::send_ptp_message
+ * @see PTPBase::_bulk_read, PTPBase::send_ptp_message
  */
-void CameraBase::recv_ptp_message(PTPContainer& out, const int timeout) {
+void PTPBase::recv_ptp_message(PTPContainer& out, const int timeout) {
     if(this->protocol == NULL || this->protocol->is_open() == false) {
         throw ERR_NOT_OPEN;
         return;
@@ -162,7 +162,7 @@ void CameraBase::recv_ptp_message(PTPContainer& out, const int timeout) {
  * If provided, \a out_resp will be populated with the command response, even if
  * \a receiving is false.
  *
- * @warning \c CameraBase::_bulk_read and \c CameraBase::_bulk_write are called multiple
+ * @warning \c PTPBase::_bulk_read and \c PTPBase::_bulk_write are called multiple
  *          times during the execution of this function, and \a timeout is passed to each
  *          of them individually.  Therefore, this function could take much more than
  *          \a timeout seconds to return.
@@ -172,11 +172,11 @@ void CameraBase::recv_ptp_message(PTPContainer& out, const int timeout) {
  * @param[in]  receiving Whether or not to receive data in addition to a response from the camera.
  * @param[out] out_resp  (optional) A \c PTPContainer where the camera's response will be placed.
  * @param[out] out_data  (optional) A \c PTPContainer where the camera's data response will be placed.
- * @param[in]  timeout   The maximum number of seconds each \c CameraBase::_bulk_read or \c CameraBase::_bulk_write
+ * @param[in]  timeout   The maximum number of seconds each \c PTPBase::_bulk_read or \c PTPBase::_bulk_write
  *                       should attempt to communicate for.
- * @see CameraBase::send_ptp_message, CameraBase::recv_ptp_message
+ * @see PTPBase::send_ptp_message, PTPBase::recv_ptp_message
  */
-void CameraBase::ptp_transaction(PTPContainer& cmd, PTPContainer& data, const bool receiving, PTPContainer& out_resp, PTPContainer& out_data, const int timeout) {
+void PTPBase::ptp_transaction(PTPContainer& cmd, PTPContainer& data, const bool receiving, PTPContainer& out_resp, PTPContainer& out_data, const int timeout) {
     bool received_data = false;
     bool received_resp = false;
 
@@ -217,9 +217,9 @@ void CameraBase::ptp_transaction(PTPContainer& cmd, PTPContainer& data, const bo
  * @brief Retrieves our current transaction ID and increments it
  *
  * @return The current transaction id (starting at 0)
- * @see CameraBase::ptp_transaction
+ * @see PTPBase::ptp_transaction
  */
-int CameraBase::get_and_increment_transaction_id() {
+int PTPBase::get_and_increment_transaction_id() {
     uint32_t ret = this->_transaction_id;
     this->_transaction_id = this->_transaction_id + 1;
     return ret;

@@ -46,7 +46,7 @@ DOXYGEN := doxygen
 CXXFLAGS := -fPIC -Wall
 LIBS := -lusb-1.0
 INCLUDES := -I./include/
-SRCS := ./lib/CameraBase.cpp \
+SRCS := ./lib/PTPBase.cpp \
 		./lib/CHDKCamera.cpp \
 		./lib/LVData.cpp \
 		./lib/PTPCamera.cpp \

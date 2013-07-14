@@ -21,13 +21,13 @@
 #ifndef LIBEASYPTP_PTPCAMERA_H_
 #define LIBEASYPTP_PTPCAMERA_H_
 
-#include "libeasyptp/CameraBase.hpp"
+#include "libeasyptp/PTPBase.hpp"
 
 namespace EasyPTP {
     
-    class CameraBase;
+    class PTPBase;
     
-    class PTPCamera : public CameraBase {
+    class PTPCamera : public PTPBase {
         public:
             PTPCamera();
     };

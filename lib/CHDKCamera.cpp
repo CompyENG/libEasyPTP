@@ -33,6 +33,7 @@
 // Needed for usleep() in script wait
 #include <unistd.h>
 #include <stdint.h>
+#include <sys/time.h>
  
 #include "libeasyptp/PTPErrors.hpp"
 #include "libeasyptp/CHDKCamera.hpp"
@@ -45,7 +46,7 @@ namespace EasyPTP {
 /**
  * Creates an empty \c CHDKCamera, without connecting to a camera.
  */
-CHDKCamera::CHDKCamera() : CameraBase() {
+CHDKCamera::CHDKCamera() : PTPBase() {
     ;
 }
 
@@ -53,9 +54,9 @@ CHDKCamera::CHDKCamera() : CameraBase() {
  * Creates a \c CHDKCamera and connects to the \c libusb_device \a dev.
  *
  * @param[in] dev The \c libusb_device to connect to.
- * @see CameraBase::CameraBase(libusb_device * dev)
+ * @see PTPBase::PTPBase(libusb_device * dev)
  */
-CHDKCamera::CHDKCamera(IPTPComm * protocol) : CameraBase(protocol) {
+CHDKCamera::CHDKCamera(IPTPComm * protocol) : PTPBase(protocol) {
     ;
 }
 

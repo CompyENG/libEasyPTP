@@ -18,17 +18,17 @@
  *  <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBEASYPTP_CAMERABASE_H_
-#define LIBEASYPTP_CAMERABASE_H_
+#ifndef LIBEASYPTP_PTPBASE_H_
+#define LIBEASYPTP_PTPBASE_H_
 
-#include <libusb-1.0/libusb.h>
+#include <stdint.h>
 
 namespace EasyPTP {
     
     class PTPContainer;
     class IPTPComm;
 
-    class CameraBase {
+    class PTPBase {
         private:
             IPTPComm * protocol;
             uint32_t _transaction_id;
@@ -38,9 +38,9 @@ namespace EasyPTP {
             int get_and_increment_transaction_id(); // What a beautiful name for a function
             
         public:
-            CameraBase();
-            CameraBase(IPTPComm * protocol);
-            ~CameraBase();
+            PTPBase();
+            PTPBase(IPTPComm * protocol);
+            ~PTPBase();
             void set_protocol(IPTPComm * protocol);
             bool reopen();
             int send_ptp_message(const PTPContainer& cmd, const int timeout=0);
@@ -49,4 +49,4 @@ namespace EasyPTP {
     };
 }
 
-#endif /* LIBEASYPTP_CAMERABASE_H_ */
+#endif /* LIBEASYPTP_PTPBase_H_ */

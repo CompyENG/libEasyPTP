@@ -23,7 +23,7 @@
 
 #include <string>
 #include <vector>
-#include "libeasyptp/CameraBase.hpp"
+#include "libeasyptp/PTPBase.hpp"
 
 namespace EasyPTP {
     
@@ -39,7 +39,7 @@ namespace EasyPTP {
         CHDK_PTP_RC_InvalidParameter = 0x201D
     };
 
-    class CHDKCamera : public CameraBase {
+    class CHDKCamera : public PTPBase {
         static uint8_t * _pack_file_for_upload(uint32_t * out_size, const std::string local_filename, const std::string remote_filename);
         public:
             CHDKCamera();

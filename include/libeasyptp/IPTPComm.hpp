@@ -34,10 +34,10 @@ namespace EasyPTP {
      * protocol.
      * 
      * Depending on the protocol, you'll probably need some additional methods to do
-     * some communication setup.  Note that \c CameraBase will only use this to send
+     * some communication setup.  Note that \c PTPBase will only use this to send
      * and receive data, and not perform any of the setup for you.  You *must* set
      * up the connection on your own before passing a communication protocol to
-     * \c CameraBase, or something could fail.
+     * \c PTPBase, or something could fail.
      * 
      * @todo I'd like to ship libptp++ with at least a libusb(x) implementaiton of
      *       IPTPComm

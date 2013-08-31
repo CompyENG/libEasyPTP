@@ -28,13 +28,23 @@ namespace EasyPTP {
     
 int PTPUSB::inst_count = 0;
     
-PTPUSB::PTPUSB() {
-    this->init();
-}
+PTPUSB::PTPUSB() : PTPUSB(NULL) { }
 
-PTPUSB::PTPUSB(libusb_device * dev) {
-    this->init();
-    this->open(dev);
+PTPUSB::PTPUSB(libusb_device * dev) : handle(NULL), usb_error(0), intf(NULL),
+		ep_in(0), ep_out(0)
+{
+	// Increment our instance count, and initialize libusb if this is our first
+	//  instance
+    if(PTPUSB::inst_count++ == 0)
+    {
+    	libusb_init(NULL);
+    }
+
+    // If we were passsed a device, open it!
+    if(dev != NULL)
+    {
+    	this->open(dev);
+    }
 }
 
 PTPUSB::~PTPUSB() {
@@ -45,19 +55,6 @@ PTPUSB::~PTPUSB() {
         // Be sure to exit libusb
         libusb_exit(NULL);
     }
-}
-
-void PTPUSB::init() {
-    if(PTPUSB::inst_count == 0) {
-        libusb_init(NULL);  // Make sure to initialize libusb first!
-    }
-    
-    PTPUSB::inst_count++;
-    this->handle = NULL;
-    this->usb_error = 0;
-    this->intf = NULL;
-    this->ep_in = 0;
-    this->ep_out = 0;
 }
 
 void PTPUSB::connect_to_first() {

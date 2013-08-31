@@ -43,7 +43,7 @@ CP := cp
 RM := rm -rf
 MKDIR := mkdir -p
 DOXYGEN := doxygen
-CXXFLAGS := -fPIC -Wall
+CXXFLAGS := -fPIC -Wall -std=c++11
 LIBS := -lusb-1.0
 INCLUDES := -I./include/
 SRCS := ./lib/PTPBase.cpp \

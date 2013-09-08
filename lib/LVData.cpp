@@ -40,8 +40,8 @@ namespace EasyPTP {
 /**
  * @brief Initialize a blank live view data container
  */
-LVData::LVData() {
-    this->init();
+LVData::LVData() : LVData(NULL, 0) {
+
 }
 
 /**
@@ -51,9 +51,13 @@ LVData::LVData() {
  * @param[in] payload_size The number of bytes in \a payload
  * @see LVData::read
  */
-LVData::LVData(const uint8_t * payload, const int payload_size) {
-    this->init();
-    this->read(payload, payload_size);
+LVData::LVData(const uint8_t * payload, const int payload_size) :
+	vp_head(new lv_data_header), fb_desc(new lv_framebuffer_desc), payload(NULL)
+{
+	if(payload != NULL)
+	{
+		this->read(payload, payload_size);
+	}
 }
 
 /**
@@ -63,15 +67,6 @@ LVData::~LVData() {
     delete this->vp_head;
     delete this->fb_desc;
     delete this->payload;
-}
-
-/**
- * @brief Initializes \c LVData variables by malloc()ing space of \c LVData::vp_head and \c LVData::fb_desc
- */
-void LVData::init() {
-	this->vp_head = new lv_data_header;
-	this->fb_desc = new lv_framebuffer_desc;
-    this->payload = NULL;
 }
 
 /**

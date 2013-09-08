@@ -41,10 +41,7 @@ namespace EasyPTP {
  *
  * @see PTPContainer::PTPContainer(uint16_t type, uint16_t op_code)
  */
-PTPContainer::PTPContainer() {
-    // Not sure what I want to do here
-    this->init();
-}
+PTPContainer::PTPContainer() : PTPContainer(0, 0) { }
 
 /**
  * @brief Create a new \c PTPContainer with \a type and \a op_code
@@ -52,10 +49,11 @@ PTPContainer::PTPContainer() {
  * @param[in] type A \c PTP_CONTAINER_TYPE for this \c PTPContainer
  * @param[in] op_code The operation for this \c PTPContainer
  */
-PTPContainer::PTPContainer(uint16_t type, uint16_t op_code) {
-    this->init();
-    this->type = type;
-    this->code = op_code;
+PTPContainer::PTPContainer(uint16_t type, uint16_t op_code) :
+	length(default_length), payload(NULL), type(type), code(op_code),
+	transaction_id(0)
+{
+	// No further initialization needed
 }
 
 /**
@@ -77,14 +75,6 @@ PTPContainer::~PTPContainer() {
         delete[] this->payload;    // Be sure to free up this memory
         this->payload = NULL;
     }
-}
-
-/**
- * @brief Initialize the variables in a \c PTPContainer
- */
-void PTPContainer::init() {
-    this->length = this->default_length; // Length is at least the sum of the header parts
-    this->payload = NULL;
 }
 
 /**

@@ -32,7 +32,6 @@ namespace EasyPTP {
         private:
             IPTPComm * protocol;
             uint32_t _transaction_id;
-            void init();
             
         protected:
             int get_and_increment_transaction_id(); // What a beautiful name for a function

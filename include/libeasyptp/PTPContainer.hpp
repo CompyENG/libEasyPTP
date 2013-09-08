@@ -28,7 +28,6 @@ namespace EasyPTP {
             static const uint32_t default_length = sizeof(uint32_t)+sizeof(uint32_t)+sizeof(uint16_t)+sizeof(uint16_t);
             uint32_t length;
             unsigned char * payload;    // We'll deal with this completely internally
-            void init();
         public:
             enum CONTAINER_TYPE {
                 CONTAINER_TYPE_COMMAND  = 1,

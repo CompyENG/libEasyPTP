@@ -47,7 +47,7 @@ namespace EasyPTP {
  * Creates an empty \c CHDKCamera, without connecting to a camera.
  */
 CHDKCamera::CHDKCamera() : PTPBase() {
-    ;
+
 }
 
 /**
@@ -57,7 +57,7 @@ CHDKCamera::CHDKCamera() : PTPBase() {
  * @see PTPBase::PTPBase(libusb_device * dev)
  */
 CHDKCamera::CHDKCamera(IPTPComm * protocol) : PTPBase(protocol) {
-    ;
+
 }
 
 /**

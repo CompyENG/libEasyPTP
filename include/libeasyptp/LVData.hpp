@@ -31,7 +31,6 @@ namespace EasyPTP {
             lv_data_header * vp_head;
             lv_framebuffer_desc * fb_desc;
             uint8_t * payload;
-            void init();
             static uint8_t clip(const int v);
             static void yuv_to_rgb(uint8_t **dest, const uint8_t y, const int8_t u, const int8_t v);
             

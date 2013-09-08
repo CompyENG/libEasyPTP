@@ -43,17 +43,19 @@ namespace EasyPTP {
  * Creates a new, empty \c PTPBase object.  Can then call
  * \c PTPBase::open to connect to a camera.
  */
-PTPBase::PTPBase() {
-    this->init();
+PTPBase::PTPBase() : PTPBase(NULL) {
+
 }
 
 /**
  * Creates a new \c PTPBase object, using \c comm for the communication
  * protocol class.
  */
-PTPBase::PTPBase(IPTPComm * protocol) {
-    this->init();
-    this->set_protocol(protocol);
+PTPBase::PTPBase(IPTPComm * protocol) :
+	protocol(NULL), _transaction_id(0)
+{
+	// If protocol == NULL, this will just re-set protocol to NULL, which is fine
+	this->set_protocol(protocol);
 }
 
 /**
@@ -62,14 +64,6 @@ PTPBase::PTPBase(IPTPComm * protocol) {
  */
 PTPBase::~PTPBase() {
     
-}
-
-/**
- * Initialize private and public \c PTPBase variables.
- */
-void PTPBase::init() {
-    this->protocol = NULL;
-    this->_transaction_id = 0;
 }
 
 void PTPBase::set_protocol(IPTPComm * protocol) {

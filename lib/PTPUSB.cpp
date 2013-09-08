@@ -170,7 +170,7 @@ bool PTPUSB::open(libusb_device * dev) {
     const struct libusb_endpoint_descriptor * endpoint;
     for(j = 0; j < this->intf->bNumEndpoints; j++) {
         endpoint = &(this->intf->endpoint[j]);
-        if((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK == LIBUSB_ENDPOINT_IN) &&
+        if(((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_IN) &&
             (endpoint->bmAttributes & LIBUSB_TRANSFER_TYPE_MASK) == LIBUSB_TRANSFER_TYPE_BULK) {
             this->ep_in = endpoint->bEndpointAddress;
         } else if((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_OUT) {

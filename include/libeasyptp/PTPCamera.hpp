@@ -23,15 +23,17 @@
 
 #include "libeasyptp/PTPBase.hpp"
 
-namespace EasyPTP {
-    
-    class PTPBase;
-    
-    class PTPCamera : public PTPBase {
-        public:
-            PTPCamera();
-    };
-    
+namespace EasyPTP
+{
+
+class PTPBase;
+
+class PTPCamera : public PTPBase
+{
+public:
+    PTPCamera();
+};
+
 }
 
 #endif /* LIBEASYPTP_PTPCAMERA_H_ */

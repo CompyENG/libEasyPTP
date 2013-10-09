@@ -43,7 +43,7 @@
  * 
  * @version 0.1
  */
- 
+
 /**
  * \mainpage libeasyptp API Reference
  * 
@@ -73,7 +73,7 @@
  * is designed so that a lot can be accomplished in as few calls as possible, so
  * the examples should help get you a quick start to using libeasyptp.
  */
- 
+
 /**
  * \page examples Examples
  *
@@ -103,7 +103,7 @@ libusb_exit(NULL);
 \endcode
  *
  */
- 
+
 #ifndef LIBEASYPTP_H_
 #define LIBEASYPTP_H_
 
@@ -119,7 +119,8 @@ libusb_exit(NULL);
 #include "libeasyptp/IPTPComm.hpp"
 #include "libeasyptp/PTPUSB.hpp"
 
-namespace EasyPTP {
+namespace EasyPTP
+{
 
 // Force these definitions into the PTP namespace
 #include "libeasyptp/chdk/live_view.h"

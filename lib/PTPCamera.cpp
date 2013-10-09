@@ -26,19 +26,21 @@
  * Eventually, this file will be full of functions to ease communication with
  * standard (non-CHDK) PTP cameras.
  */
- 
+
 #include "libeasyptp/PTPErrors.hpp"
 #include "libeasyptp/PTPCamera.hpp"
 
-namespace EasyPTP {
-    
+namespace EasyPTP
+{
+
 /**
  * @brief Creates an empty \c PTPCamera.
  *
  * @warning This class is not yet implemented. Creating an object of type
  *          \c PTPCamera will only result in a warning printed to \c stderr.
  */
-PTPCamera::PTPCamera() {
+PTPCamera::PTPCamera()
+{
     throw ERR_NOT_IMPLEMENTED;
 }
 

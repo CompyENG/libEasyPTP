@@ -23,29 +23,31 @@
 
 #include <stdint.h>
 
-namespace EasyPTP {
-    
-    class PTPContainer;
-    class IPTPComm;
+namespace EasyPTP
+{
 
-    class PTPBase {
-        private:
-            IPTPComm * protocol;
-            uint32_t _transaction_id;
-            
-        protected:
-            int get_and_increment_transaction_id(); // What a beautiful name for a function
-            
-        public:
-            PTPBase();
-            PTPBase(IPTPComm * protocol);
-            ~PTPBase();
-            void set_protocol(IPTPComm * protocol);
-            bool reopen();
-            int send_ptp_message(const PTPContainer& cmd, const int timeout=0);
-            void recv_ptp_message(PTPContainer& out, const int timeout=0);
-            void ptp_transaction(PTPContainer& cmd, PTPContainer& data, const bool receiving, PTPContainer& out_resp, PTPContainer& out_data, const int timeout=0);
-    };
+class PTPContainer;
+class IPTPComm;
+
+class PTPBase
+{
+private:
+    IPTPComm * protocol;
+    uint32_t _transaction_id;
+
+protected:
+    int get_and_increment_transaction_id(); // What a beautiful name for a function
+
+public:
+    PTPBase();
+    PTPBase(IPTPComm * protocol);
+    ~PTPBase();
+    void set_protocol(IPTPComm * protocol);
+    bool reopen();
+    int send_ptp_message(const PTPContainer& cmd, const int timeout = 0);
+    void recv_ptp_message(PTPContainer& out, const int timeout = 0);
+    void ptp_transaction(PTPContainer& cmd, PTPContainer& data, const bool receiving, PTPContainer& out_resp, PTPContainer& out_data, const int timeout = 0);
+};
 }
 
 #endif /* LIBEASYPTP_PTPBase_H_ */

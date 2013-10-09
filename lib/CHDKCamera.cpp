@@ -27,26 +27,28 @@
  * with cameras running CHDK.  This file defines the multiple convenience
  * functions that make communicating with CHDK simple.
  */
- 
+
 #include <cstring>
 #include <fstream>
 // Needed for usleep() in script wait
 #include <unistd.h>
 #include <stdint.h>
 #include <sys/time.h>
- 
+
 #include "libeasyptp/PTPErrors.hpp"
 #include "libeasyptp/CHDKCamera.hpp"
 #include "libeasyptp/PTPContainer.hpp"
 #include "libeasyptp/LVData.hpp"
 #include "libeasyptp/chdk/ptp.h"
 
-namespace EasyPTP {
+namespace EasyPTP
+{
 
 /**
  * Creates an empty \c CHDKCamera, without connecting to a camera.
  */
-CHDKCamera::CHDKCamera() : PTPBase() {
+CHDKCamera::CHDKCamera() : PTPBase()
+{
 
 }
 
@@ -56,7 +58,8 @@ CHDKCamera::CHDKCamera() : PTPBase() {
  * @param[in] dev The \c libusb_device to connect to.
  * @see PTPBase::PTPBase(libusb_device * dev)
  */
-CHDKCamera::CHDKCamera(IPTPComm * protocol) : PTPBase(protocol) {
+CHDKCamera::CHDKCamera(IPTPComm * protocol) : PTPBase(protocol)
+{
 
 }
 
@@ -66,10 +69,11 @@ CHDKCamera::CHDKCamera(IPTPComm * protocol) : PTPBase(protocol) {
  * @note Assumes the minor version is one digit long.
  * @return The CHDK version number.
  */
-float CHDKCamera::get_chdk_version(void) {
+float CHDKCamera::get_chdk_version(void)
+{
     PTPContainer cmd(PTPContainer::CONTAINER_TYPE_COMMAND, 0x9999);
     cmd.add_param(PTP_CHDK_Version);
-    
+
     PTPContainer out_resp, data, out_data;
     this->ptp_transaction(cmd, data, false, out_resp, out_data);
     // param 1 is four bytes of major version
@@ -79,13 +83,14 @@ float CHDKCamera::get_chdk_version(void) {
     int payload_size;
     uint32_t major = 0, minor = 0;
     payload = out_resp.get_payload(&payload_size);
-    if(payload_size >= 8) { // Need at least 8 bytes in the payload
-        std::memcpy(&major, payload, 4);            // Copy first four bytes into major
-        std::memcpy(&minor, payload + 4, 4);        // Copy next four bytes into minor
+    if (payload_size >= 8)
+    { // Need at least 8 bytes in the payload
+        std::memcpy(&major, payload, 4); // Copy first four bytes into major
+        std::memcpy(&minor, payload + 4, 4); // Copy next four bytes into minor
     }
     delete[] payload;
-    
-    out = major + minor/10.0;   // This assumes that the minor version is one digit long
+
+    out = major + minor / 10.0; // This assumes that the minor version is one digit long
     return out;
 }
 
@@ -94,13 +99,14 @@ float CHDKCamera::get_chdk_version(void) {
  *
  * @return The current script status, a member of CHDK_SCRIPT_STATUS
  */
-uint32_t CHDKCamera::check_script_status(void) {
+uint32_t CHDKCamera::check_script_status(void)
+{
     PTPContainer cmd(PTPContainer::CONTAINER_TYPE_COMMAND, 0x9999);
     cmd.add_param(PTP_CHDK_ScriptStatus);
-    
+
     PTPContainer out_resp, data, out_data;
     this->ptp_transaction(cmd, data, true, out_resp, out_data);
-    
+
     return out_resp.get_param_n(0);
 }
 
@@ -113,35 +119,41 @@ uint32_t CHDKCamera::check_script_status(void) {
  * @return The first parameter in the PTP response (?)
  * @todo Finish blocking code, allow timeout input
  */
-uint32_t CHDKCamera::execute_lua(const std::string script, uint32_t * script_error, const bool block) {
+uint32_t CHDKCamera::execute_lua(const std::string script, uint32_t * script_error, const bool block)
+{
     PTPContainer cmd(PTPContainer::CONTAINER_TYPE_COMMAND, 0x9999);
     cmd.add_param(PTP_CHDK_ExecuteScript);
     cmd.add_param(PTP_CHDK_SL_LUA);
-    
+
     PTPContainer data(PTPContainer::CONTAINER_TYPE_DATA, 0x9999);
     data.set_payload(script.c_str(), script.length() + 1);
-    
+
     PTPContainer out_resp, out_data;
     this->ptp_transaction(cmd, data, false, out_resp, out_data);
-    
+
     uint32_t out = -1;
     unsigned char * payload;
     int payload_size;
     payload = out_resp.get_payload(&payload_size);
-    
-    if(block) {
+
+    if (block)
+    {
         //printf("TODO: Blocking code");
         this->_wait_for_script_return(5);
-    } else {
-        if(payload_size >= 8) { // Need at least 8 bytes in the payload
+    }
+    else
+    {
+        if (payload_size >= 8)
+        { // Need at least 8 bytes in the payload
             std::memcpy(&out, payload, 4);
-            if(script_error != NULL) {
+            if (script_error != NULL)
+            {
                 std::memcpy(script_error, payload + 4, 4);
             }
         }
     }
     delete[] payload;
-    
+
     return out;
 }
 
@@ -155,11 +167,12 @@ uint32_t CHDKCamera::execute_lua(const std::string script, uint32_t * script_err
  * 
  * @todo Convert to a string and return actual message?
  */
-void CHDKCamera::read_script_message(PTPContainer& out_resp, PTPContainer& out_data) {
+void CHDKCamera::read_script_message(PTPContainer& out_resp, PTPContainer& out_data)
+{
     PTPContainer cmd(PTPContainer::CONTAINER_TYPE_COMMAND, 0x9999);
     cmd.add_param(PTP_CHDK_ReadScriptMsg);
     cmd.add_param(PTP_CHDK_SL_LUA);
-    
+
     PTPContainer data;
     this->ptp_transaction(cmd, data, true, out_resp, out_data);
     // We'll just let the caller deal with the data
@@ -172,27 +185,29 @@ void CHDKCamera::read_script_message(PTPContainer& out_resp, PTPContainer& out_d
  * @param[in] script_id (optional) The ID of the script to send the message to.
  * @return The first parameter from the PTP response.
  */
-uint32_t CHDKCamera::write_script_message(const std::string message, const uint32_t script_id) {
+uint32_t CHDKCamera::write_script_message(const std::string message, const uint32_t script_id)
+{
     PTPContainer cmd(PTPContainer::CONTAINER_TYPE_COMMAND, 0x9999);
     cmd.add_param(PTP_CHDK_WriteScriptMsg);
     cmd.add_param(script_id);
-    
+
     PTPContainer data(PTPContainer::CONTAINER_TYPE_DATA, 0x9999);
     data.set_payload(message.c_str(), message.length());
-    
+
     PTPContainer out_resp, out_data;
     this->ptp_transaction(cmd, data, false, out_resp, out_data);
-    
+
     uint32_t out = -1;
     unsigned char * payload;
     int payload_size;
     payload = out_resp.get_payload(&payload_size);
-    
-    if(payload_size >= 4) { // Need four bytes of uint32_t response
+
+    if (payload_size >= 4)
+    { // Need four bytes of uint32_t response
         std::memcpy(&out, payload, 4);
     }
     delete[] payload;
-    
+
     return out;
 }
 
@@ -209,24 +224,25 @@ uint32_t CHDKCamera::write_script_message(const std::string message, const uint3
  * @param[in]  palette  True to return the palette for the overlay
  * @see LVData, http://chdk.wikia.com/wiki/Frame_buffers
  */
-void CHDKCamera::get_live_view_data(LVData& data_out, const bool liveview, const bool overlay, const bool palette) {
+void CHDKCamera::get_live_view_data(LVData& data_out, const bool liveview, const bool overlay, const bool palette)
+{
     uint32_t flags = 0;
-    if(liveview) flags |= LV_TFR_VIEWPORT;
-    if(overlay)  flags |= LV_TFR_BITMAP;
-    if(palette)  flags |= LV_TFR_PALETTE;
-    
+    if (liveview) flags |= LV_TFR_VIEWPORT;
+    if (overlay) flags |= LV_TFR_BITMAP;
+    if (palette) flags |= LV_TFR_PALETTE;
+
     PTPContainer cmd(PTPContainer::CONTAINER_TYPE_COMMAND, 0x9999);
     cmd.add_param(PTP_CHDK_GetDisplayData);
     cmd.add_param(flags);
-    
+
     PTPContainer data, out_resp, out_data;
     this->ptp_transaction(cmd, data, true, out_resp, out_data);
-    
+
     int payload_size;
     unsigned char * payload = out_data.get_payload(&payload_size);
-    
-    data_out.read(payload, payload_size);    // The LVData class will completely handle the LV data
-    
+
+    data_out.read(payload, payload_size); // The LVData class will completely handle the LV data
+
     delete[] payload;
 }
 
@@ -243,37 +259,47 @@ void CHDKCamera::get_live_view_data(LVData& data_out, const bool liveview, const
  * @param[in] timeout The maximum amount of time to let this function run for
  * @return All read script messages.
  */
-std::vector<std::string> CHDKCamera::_wait_for_script_return(const int timeout) {
+std::vector<std::string> CHDKCamera::_wait_for_script_return(const int timeout)
+{
     int msg_count = 1;
     std::vector<std::string> msgs;
     struct timeval time;
     long t_start;
     long t_end;
     uint32_t status;
-    
+
     gettimeofday(&time, NULL);
     t_start = (time.tv_sec * 1000) + (time.tv_usec / 1000);
-    
-    while(1) {
+
+    while (1)
+    {
         status = this->check_script_status();
-        
-        if(status & PTP_CHDK_SCRIPT_STATUS_RUN) { // If a script is running
+
+        if (status & PTP_CHDK_SCRIPT_STATUS_RUN)
+        { // If a script is running
             // Sleep for 50 ms
             usleep(50 * 1000);
             gettimeofday(&time, NULL);
             t_end = (time.tv_sec * 1000) + (time.tv_usec / 1000);
-            if(timeout > 0 && timeout > (t_end - t_start)) {
+            if (timeout > 0 && timeout > (t_end - t_start))
+            {
                 throw ERR_TIMEOUT;
             }
-        } else if(status & PTP_CHDK_SCRIPT_STATUS_MSG) {
+        }
+        else if (status & PTP_CHDK_SCRIPT_STATUS_MSG)
+        {
             // TODO: Read script message, determine how to return
-        } else if(status == 0) {
+        }
+        else if (status == 0)
+        {
             break;
-        } else {
+        }
+        else
+        {
             throw ERR_INVALID_RESPONSE;
         }
     }
-    
+
     return msgs;
 }
 
@@ -294,31 +320,32 @@ std::vector<std::string> CHDKCamera::_wait_for_script_return(const int timeout) 
  * @return A pointer to the first byte of the resulting data
  * @see CHDKCamera::upload_file
  */
-uint8_t * CHDKCamera::_pack_file_for_upload(uint32_t * out_size, const std::string local_filename, const std::string remote_filename) {
+uint8_t * CHDKCamera::_pack_file_for_upload(uint32_t * out_size, const std::string local_filename, const std::string remote_filename)
+{
     uint32_t file_size;
     uint8_t * out;
     int name_length;
-    
+
     name_length = remote_filename.length();
-    
-	std::ifstream stream_local(local_filename.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
+
+    std::ifstream stream_local(local_filename.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
     // Open file for reading, binary type of file, place pointer at end of file
-    
+
     file_size = stream_local.tellg(); // Retrives the position of the input stream
     // Since we asked to open the file at the end, this is the length of the file
     stream_local.seekg(0, std::ios::beg);
-    
-	out = new uint8_t[4 + name_length + file_size];   // Allocate memory for the packed file
-    
-    std::memcpy(out, &file_size, 4);        // Copy four bytes of file size to output
-	const char * r_filename = remote_filename.data();
-    std::memcpy(out + 4, r_filename, name_length);      // Copy the file name in
-    stream_local.read((char *)(out+4+name_length), file_size);    // Copy the file contents in
-    
+
+    out = new uint8_t[4 + name_length + file_size]; // Allocate memory for the packed file
+
+    std::memcpy(out, &file_size, 4); // Copy four bytes of file size to output
+    const char * r_filename = remote_filename.data();
+    std::memcpy(out + 4, r_filename, name_length); // Copy the file name in
+    stream_local.read((char *) (out + 4 + name_length), file_size); // Copy the file contents in
+
     stream_local.close(); // Close the opened file stream
-    
+
     *out_size = 4 + name_length + file_size; // Output the size of the result
-    
+
     return out; // Return the packed file. Caller is responsible for free()ing this
 }
 
@@ -330,22 +357,23 @@ uint8_t * CHDKCamera::_pack_file_for_upload(uint32_t * out_size, const std::stri
  * @param[in] timeout (optional) The timeout for each PTP call
  * @return True on success
  */
-bool CHDKCamera::upload_file(const std::string local_filename, const std::string remote_filename, const int timeout) {
+bool CHDKCamera::upload_file(const std::string local_filename, const std::string remote_filename, const int timeout)
+{
     uint8_t * packed;
     uint32_t packed_size;
     PTPContainer cmd(PTPContainer::CONTAINER_TYPE_COMMAND, 0x9999);
     PTPContainer data(PTPContainer::CONTAINER_TYPE_DATA, 0x9999);
     PTPContainer resp, out_data;
-    
+
     packed = CHDKCamera::_pack_file_for_upload(&packed_size, local_filename, remote_filename);
-    
+
     cmd.add_param(PTP_CHDK_UploadFile);
     data.set_payload(packed, packed_size);
-    
+
     this->ptp_transaction(cmd, data, false, resp, out_data);
-    
+
     delete[] packed;
-    
+
     return (resp.get_param_n(0) == CHDK_PTP_RC_OK);
 }
 

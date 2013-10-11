@@ -38,7 +38,7 @@ private:
     uint8_t ep_out;
 
     bool open(libusb_device * dev);
-    static libusb_device * find_first_camera();
+    libusb_device * find_first_camera();
     void init();
 
 	static const int INTERFACE_CLASS_PTP = 6;

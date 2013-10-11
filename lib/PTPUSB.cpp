@@ -26,9 +26,6 @@
 
 namespace EasyPTP
 {
-
-int PTPUSB::inst_count = 0;
-
 PTPUSB::PTPUSB() : PTPUSB(NULL)
 {
 }
@@ -36,12 +33,7 @@ PTPUSB::PTPUSB() : PTPUSB(NULL)
 PTPUSB::PTPUSB(libusb_device * dev) : handle(NULL), usb_error(0), intf(NULL),
 ep_in(0), ep_out(0)
 {
-    // Increment our instance count, and initialize libusb if this is our first
-    //  instance
-    if (PTPUSB::inst_count++ == 0)
-    {
-        libusb_init(NULL);
-    }
+	libusb_init(&context);
 
     // If we were passsed a device, open it!
     if (dev != NULL)
@@ -54,23 +46,16 @@ PTPUSB::~PTPUSB()
 {
     this->close();
 
-    PTPUSB::inst_count--;
-    if (PTPUSB::inst_count == 0)
-    {
-        // Be sure to exit libusb
-        libusb_exit(NULL);
-    }
+	// Be sure to exit libusb
+	libusb_exit(context);
 }
 
 void PTPUSB::connect_to_first()
 {
     // Find the first camera
     libusb_device * dev = this->find_first_camera();
-    if (dev == NULL)
-    {
-        // TODO: Throw exception
+    if (dev == NULL) // TODO: Throw exception
         return;
-    }
 
     this->open(dev);
 }
@@ -85,60 +70,63 @@ void PTPUSB::connect_to_first()
  */
 libusb_device * PTPUSB::find_first_camera()
 {
-    // discover devices
-    libusb_device **list;
-    libusb_device *found = NULL;
-    ssize_t cnt = libusb_get_device_list(NULL, &list);
-    ssize_t i = 0, j = 0, k = 0;
-    int err = 0;
-    if (cnt < 0)
-    {
+    libusb_device **usb_device_list;
+    libusb_device *ptp_device = NULL;
+    ssize_t device_count = libusb_get_device_list(context, &usb_device_list);
+    if (device_count < 0)
         return NULL;
-    }
 
-    for (i = 0; i < cnt; i++)
+    for (int i = 0; i < device_count; i++)
     {
-        libusb_device *device = list[i];
-        struct libusb_config_descriptor * desc;
-        int r = libusb_get_active_config_descriptor(device, &desc);
-
-        if (r < 0)
+        if(isPTPDevice(usb_device_list[i]))
         {
-            return NULL;
+            ptp_device = usb_device_list[i];
+            libusb_ref_device(ptp_device);
+            break;
         }
-
-        for (j = 0; j < desc->bNumInterfaces; j++)
-        {
-            struct libusb_interface interface = desc->interface[j];
-            for (k = 0; k < interface.num_altsetting; k++)
-            {
-                struct libusb_interface_descriptor altsetting = interface.altsetting[k];
-                if (altsetting.bInterfaceClass == 6)
-                { // If this has the PTP interface
-                    found = device;
-                    break;
-                }
-            }
-            if (found) break;
-        }
-
-        libusb_free_config_descriptor(desc);
-
-        if (found) break;
     }
 
-    if (found)
+    libusb_free_device_list(usb_device_list, 1); // Free the device list with dereferencing. Shouldn't delete our device, since we ref'd it
+
+    return ptp_device;
+}
+
+/**
+ * @brief Checks if the given device is a PTP device
+ * 
+ * @param device The libusb_device to check
+ * @return bool
+ */
+bool PTPUSB::isPTPDevice(libusb_device *device)
+{
+    USBConfigDescriptor desc(device);
+
+    for (int j = 0; j < desc.get()->bNumInterfaces; j++)
     {
-        libusb_ref_device(found); // Add a reference to the device so it doesn't get destroyed when we free_device_list
+        if(isPTPInterface(desc.get()->interface[j]))
+        	return true;
     }
 
-    libusb_free_device_list(list, 1); // Free the device list with dereferencing. Shouldn't delete our device, since we ref'd it
+    return false;
+}
 
-    return found;
+bool PTPUSB::isPTPInterface(struct libusb_interface interface)
+{
+	for (int k = 0; k < interface.num_altsetting; k++)
+	{
+		if (interface.altsetting[k].bInterfaceClass == INTERFACE_CLASS_PTP)
+			return true;
+	}
+
+	return false;
 }
 
 /**
  * @brief Opens the camera specified by \a dev.
+ *
+ * The device must already be referenced once.  Calling this function will unref
+ * the device once.  It's recommended you use a PTPUSB function to find the USB
+ * device to open, but that isn't a strict requirement.
  *
  * @param[in] dev The \c libusb_device which specifies which device to connect to.
  * @exception PTP::ERR_ALREADY_OPEN if this \c PTPUSB already has an open device.
@@ -147,67 +135,82 @@ libusb_device * PTPUSB::find_first_camera()
  */
 bool PTPUSB::open(libusb_device * dev)
 {
-    if (this->handle != NULL)
-    { // Handle will be non-null if the device is already open
+    if (is_open()) // Handle will be non-null if the device is already open
         throw ERR_ALREADY_OPEN;
-        return false;
-    }
 
     int err = libusb_open(dev, &(this->handle)); // Open the device, placing the handle in this->handle
-    if (err)
-    {
+    if (err != LIBUSB_SUCCESS)
         throw ERR_CANNOT_CONNECT;
-        return false;
-    }
+
     libusb_unref_device(dev); // We needed this device refed before we opened it, so we added an extra ref. open adds another ref, so remove one ref
 
-    struct libusb_config_descriptor * desc;
-    int r = libusb_get_active_config_descriptor(dev, &desc);
+    getPTPInterface(dev, this->intf, this->handle);
 
-    if (r < 0)
-    {
-        this->usb_error = r;
-        return false;
-    }
-
-    int j, k;
-
-    for (j = 0; j < desc->bNumInterfaces; j++)
-    {
-        struct libusb_interface interface = desc->interface[j];
-        for (k = 0; k < interface.num_altsetting; k++)
-        {
-            struct libusb_interface_descriptor altsetting = interface.altsetting[k];
-            if (altsetting.bInterfaceClass == 6)
-            { // If this has the PTP interface
-                this->intf = &altsetting;
-                libusb_claim_interface(this->handle, this->intf->bInterfaceNumber); // Claim the interface -- Needs to be done before I/O operations
-                break;
-            }
-        }
-        if (this->intf) break;
-    }
-
-
-    const struct libusb_endpoint_descriptor * endpoint;
-    for (j = 0; j < this->intf->bNumEndpoints; j++)
-    {
-        endpoint = &(this->intf->endpoint[j]);
-        if (((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_IN) &&
-                (endpoint->bmAttributes & LIBUSB_TRANSFER_TYPE_MASK) == LIBUSB_TRANSFER_TYPE_BULK)
-        {
-            this->ep_in = endpoint->bEndpointAddress;
-        }
-        else if ((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_OUT)
-        {
-            this->ep_out = endpoint->bEndpointAddress;
-        }
-    }
-
-    libusb_free_config_descriptor(desc);
+    getEndpoints(this->intf, this->ep_in, this->ep_out);
 
     // If we haven't detected an error by now, assume that this worked.
     return true;
+}
+
+bool PTPUSB::isBulkInEndpoint(const struct libusb_endpoint_descriptor* endpoint)
+{
+	return (((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_IN)
+			&& ((endpoint->bmAttributes & LIBUSB_TRANSFER_TYPE_MASK) == LIBUSB_TRANSFER_TYPE_BULK));
+}
+
+bool PTPUSB::isOutEndpoint(const struct libusb_endpoint_descriptor* endpoint)
+{
+	return ((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_OUT);
+}
+
+void PTPUSB::getEndpoints(struct libusb_interface_descriptor *intf, uint8_t &ep_in, uint8_t &ep_out)
+{
+	bool found_ep_in = false, found_ep_out = false;
+	for (int i = 0; i < intf->bNumEndpoints; i++)
+	{
+		const struct libusb_endpoint_descriptor * endpoint = &(intf->endpoint[i]);
+		if (isBulkInEndpoint(endpoint))
+		{
+			ep_in = endpoint->bEndpointAddress;
+			found_ep_in = true;
+		}
+		else if (isOutEndpoint(endpoint))
+		{
+			ep_out = endpoint->bEndpointAddress;
+			found_ep_out = true;
+		}
+		if(found_ep_in && found_ep_out) return;
+	}
+	throw ERR_NO_PTP_INTERFACE;
+}
+
+/**
+ * Claim a PTP interface from the device dev, store the descriptor and
+ * handle in intf and handle respectively.
+ *
+ * @TODO Merge some code with isPTPDevice/isPTPInterface.  A lot of
+ * 		 that code is duplicated here currently.
+ */
+void PTPUSB::getPTPInterface(libusb_device *dev, struct libusb_interface_descriptor *& intf, libusb_device_handle *& handle)
+{
+	USBConfigDescriptor desc(dev);
+
+	for (int i = 0; i < desc.get()->bNumInterfaces; i++)
+	{
+		struct libusb_interface interface = desc.get()->interface[i];
+		for (int j = 0; j < interface.num_altsetting; j++)
+		{
+			struct libusb_interface_descriptor altsetting = interface.altsetting[j];
+			if (altsetting.bInterfaceClass == INTERFACE_CLASS_PTP)
+			{ // If this has the PTP interface
+				intf = &altsetting;
+				libusb_claim_interface(handle, intf->bInterfaceNumber); // Claim the interface -- Needs to be done before I/O operations
+				return;
+			}
+		}
+	}
+
+	throw ERR_NO_PTP_INTERFACE;
 }
 
 /**
@@ -225,19 +228,15 @@ bool PTPUSB::_bulk_write(const unsigned char * bytestr, const int length, const 
 {
     int transferred;
 
-    if (this->handle == NULL)
-    {
+    if (!is_open())
         throw EasyPTP::ERR_NOT_OPEN;
-        return 0;
-    }
 
-    unsigned char * write_data = new unsigned char[length];
-    std::copy(bytestr, bytestr + length, write_data);
+    std::vector<unsigned char> write_data;
+    write_data.resize(length);
+    std::copy(bytestr, bytestr + length, write_data.data());
 
     // TODO: Return the amount of data transferred? Check it here? What should we do if not enough was sent?
-    bool ret = (libusb_bulk_transfer(this->handle, this->ep_out, write_data, length, &transferred, timeout) == 0);
-
-    delete[] write_data;
+    bool ret = (libusb_bulk_transfer(this->handle, this->ep_out, write_data.data(), length, &transferred, timeout) == 0);
 
     return ret;
 }
@@ -256,11 +255,8 @@ bool PTPUSB::_bulk_write(const unsigned char * bytestr, const int length, const 
  */
 bool PTPUSB::_bulk_read(unsigned char * data_out, const int size, int * transferred, const int timeout)
 {
-    if (this->handle == NULL)
-    {
+    if (!is_open())
         throw ERR_NOT_OPEN;
-        return 0;
-    }
 
     // TODO: Return the amount of data transferred? We might get less than we ask for, which means we need to tell the calling function?
     return libusb_bulk_transfer(this->handle, this->ep_in, data_out, size, transferred, timeout) == 0;
@@ -272,7 +268,7 @@ bool PTPUSB::_bulk_read(unsigned char * data_out, const int size, int * transfer
 bool PTPUSB::is_open()
 {
     // This should work... and be fairly straightforward!
-    return this->handle != NULL;
+    return (this->handle != NULL);
 }
 
 /**
@@ -281,12 +277,32 @@ bool PTPUSB::is_open()
  */
 void PTPUSB::close()
 {
-    if (this->handle != NULL)
+    if (is_open())
     {
         libusb_release_interface(this->handle, this->intf->bInterfaceNumber);
         libusb_close(this->handle);
         this->handle = NULL;
     }
+}
+
+/**
+ * The USBConfigDescriptor class is used as a helper to ensure that cleanup
+ * for the descriptor happens.
+ */
+PTPUSB::USBConfigDescriptor::USBConfigDescriptor(libusb_device *device)
+{
+	if (libusb_get_active_config_descriptor(device, &desc) != LIBUSB_SUCCESS)
+		throw ERR_USB_ERROR;
+}
+
+PTPUSB::USBConfigDescriptor::~USBConfigDescriptor()
+{
+	libusb_free_config_descriptor(desc);
+}
+
+struct libusb_config_descriptor * PTPUSB::USBConfigDescriptor::get()
+{
+	return desc;
 }
 
 }

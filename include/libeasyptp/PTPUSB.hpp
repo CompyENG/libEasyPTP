@@ -30,15 +30,35 @@ namespace EasyPTP
 class PTPUSB : public IPTPComm
 {
 private:
+    struct libusb_context *context;
     libusb_device_handle *handle;
     int usb_error;
     struct libusb_interface_descriptor *intf;
     uint8_t ep_in;
     uint8_t ep_out;
+
     bool open(libusb_device * dev);
     static libusb_device * find_first_camera();
     void init();
-    static int inst_count;
+
+	static const int INTERFACE_CLASS_PTP = 6;
+
+    bool isPTPDevice(libusb_device *device);
+    bool isPTPInterface(struct libusb_interface interface);
+    void getPTPInterface(libusb_device *dev, struct libusb_interface_descriptor *& intf, libusb_device_handle *& handle);
+    void getEndpoints(struct libusb_interface_descriptor *intf, uint8_t &ep_in, uint8_t &ep_out);
+	bool isBulkInEndpoint(const struct libusb_endpoint_descriptor* endpoint);
+	bool isOutEndpoint(const struct libusb_endpoint_descriptor* endpoint);
+
+    class USBConfigDescriptor
+    {
+    private:
+    	struct libusb_config_descriptor * desc;
+    public:
+    	USBConfigDescriptor(libusb_device *device);
+    	~USBConfigDescriptor();
+    	struct libusb_config_descriptor *get();
+    };
 
 public:
     PTPUSB();

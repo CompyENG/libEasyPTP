@@ -261,7 +261,7 @@ void CHDKCamera::get_live_view_data(LVData& data_out, const bool liveview, const
  */
 std::vector<std::string> CHDKCamera::_wait_for_script_return(const int timeout)
 {
-    int msg_count = 1;
+    //int msg_count = 1;
     std::vector<std::string> msgs;
     struct timeval time;
     long t_start;

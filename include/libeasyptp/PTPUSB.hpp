@@ -21,7 +21,12 @@
 #ifndef LIBEASYPTP_PTPUSB_H_
 #define LIBEASYPTP_PTPUSB_H_
 
+#ifdef __FreeBSD__
+#include <libusb.h>
+#else
 #include <libusb-1.0/libusb.h>
+#endif
+
 #include "libeasyptp/IPTPComm.hpp"
 
 namespace EasyPTP

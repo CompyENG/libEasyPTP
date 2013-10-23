@@ -38,7 +38,7 @@ private:
     struct libusb_context *context;
     libusb_device_handle *handle;
     int usb_error;
-    struct libusb_interface_descriptor *intf;
+    struct libusb_interface_descriptor intf;
     uint8_t ep_in;
     uint8_t ep_out;
 
@@ -50,7 +50,7 @@ private:
 
     bool isPTPDevice(libusb_device *device);
     bool isPTPInterface(struct libusb_interface interface);
-    void getPTPInterface(libusb_device *dev, struct libusb_interface_descriptor *& intf, libusb_device_handle *& handle);
+    void getPTPInterface(libusb_device *dev, struct libusb_interface_descriptor & intf, libusb_device_handle *& handle);
     void getEndpoints(struct libusb_interface_descriptor *intf, uint8_t &ep_in, uint8_t &ep_out);
 	bool isBulkInEndpoint(const struct libusb_endpoint_descriptor* endpoint);
 	bool isOutEndpoint(const struct libusb_endpoint_descriptor* endpoint);

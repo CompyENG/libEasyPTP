@@ -35,7 +35,7 @@ PTPUSB::PTPUSB() : PTPUSB(NULL)
 {
 }
 
-PTPUSB::PTPUSB(libusb_device * dev) : handle(NULL), usb_error(0), intf(NULL),
+PTPUSB::PTPUSB(libusb_device * dev) : handle(NULL), usb_error(0),
 ep_in(0), ep_out(0)
 {
 	libusb_init(&context);
@@ -151,7 +151,7 @@ bool PTPUSB::open(libusb_device * dev)
 
     getPTPInterface(dev, this->intf, this->handle);
 
-    getEndpoints(this->intf, this->ep_in, this->ep_out);
+    getEndpoints(&this->intf, this->ep_in, this->ep_out);
 
     // If we haven't detected an error by now, assume that this worked.
     return true;
@@ -196,7 +196,7 @@ void PTPUSB::getEndpoints(struct libusb_interface_descriptor *intf, uint8_t &ep_
  * @TODO Merge some code with isPTPDevice/isPTPInterface.  A lot of
  * 		 that code is duplicated here currently.
  */
-void PTPUSB::getPTPInterface(libusb_device *dev, struct libusb_interface_descriptor *& intf, libusb_device_handle *& handle)
+void PTPUSB::getPTPInterface(libusb_device *dev, struct libusb_interface_descriptor & intf, libusb_device_handle *& handle)
 {
 	USBConfigDescriptor desc(dev);
 
@@ -208,8 +208,8 @@ void PTPUSB::getPTPInterface(libusb_device *dev, struct libusb_interface_descrip
 			struct libusb_interface_descriptor altsetting = interface.altsetting[j];
 			if (altsetting.bInterfaceClass == INTERFACE_CLASS_PTP)
 			{ // If this has the PTP interface
-				intf = &altsetting;
-				libusb_claim_interface(handle, intf->bInterfaceNumber); // Claim the interface -- Needs to be done before I/O operations
+				intf = altsetting;
+				libusb_claim_interface(handle, altsetting.bInterfaceNumber); // Claim the interface -- Needs to be done before I/O operations
 				return;
 			}
 		}
@@ -284,7 +284,7 @@ void PTPUSB::close()
 {
     if (is_open())
     {
-        libusb_release_interface(this->handle, this->intf->bInterfaceNumber);
+        libusb_release_interface(this->handle, this->intf.bInterfaceNumber);
         libusb_close(this->handle);
         this->handle = NULL;
     }

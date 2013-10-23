@@ -41,7 +41,7 @@ protected:
 public:
     PTPBase();
     PTPBase(IPTPComm * protocol);
-    ~PTPBase();
+    virtual ~PTPBase();
     void set_protocol(IPTPComm * protocol);
     bool reopen();
     int send_ptp_message(const PTPContainer& cmd, const int timeout = 0);

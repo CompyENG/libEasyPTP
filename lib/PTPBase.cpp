@@ -184,7 +184,8 @@ void PTPBase::recv_ptp_message(PTPContainer& out, const int timeout)
  */
 void PTPBase::ptp_transaction(PTPContainer& cmd, PTPContainer& data, const bool receiving, PTPContainer& out_resp, PTPContainer& out_data, const int timeout)
 {
-    bool received_data = false;
+	// TODO: Use received data
+//    bool received_data = false;
     bool received_resp = false;
 
     cmd.transaction_id = this->get_and_increment_transaction_id();
@@ -203,7 +204,7 @@ void PTPBase::ptp_transaction(PTPContainer& cmd, PTPContainer& data, const bool 
         this->recv_ptp_message(out, timeout);
         if (out.type == PTPContainer::CONTAINER_TYPE_DATA)
         {
-            received_data = true;
+//            received_data = true;
             // TODO: It occurs to me that pack() and unpack() might be inefficient. Let's try to find a better way to do this.
             unsigned char * packed = out.pack();
             out_data.unpack(packed);

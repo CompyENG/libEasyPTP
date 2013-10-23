@@ -40,7 +40,7 @@ public:
     LVData();
     LVData(const uint8_t * payload, const int payload_size);
     ~LVData();
-    void read(const uint8_t * payload, const int payload_size);
+    void read(const uint8_t * payload, const unsigned int payload_size);
     void read(const PTPContainer& container); // Could this make life easier?
     uint8_t * get_rgb(int * out_size, int * out_width, int * out_height, const bool skip = false) const; // Some cameras don't require skip
     float get_lv_version() const;

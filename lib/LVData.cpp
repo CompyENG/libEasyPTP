@@ -86,7 +86,7 @@ LVData::~LVData()
  *              enough to actually contain live view data.
  * @todo The casting here is pretty bad. How can I clean this up?
  */
-void LVData::read(const uint8_t * payload, const int payload_size)
+void LVData::read(const uint8_t * payload, const unsigned int payload_size)
 {
     if (payload_size < (sizeof (lv_data_header) + sizeof (lv_framebuffer_desc)))
     {
